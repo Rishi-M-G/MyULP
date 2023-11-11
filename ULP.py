@@ -44,7 +44,7 @@ class LogParser:
 
         event_label = []
         #print("\n============================Removing obvious dynamic variables======================\n\n")
-        for idx, log in self.df_log['Content'].iteritems():
+        for idx, log in self.df_log['Content'].items():
             tokens =log.split()
             tokens = re.sub(r"\\", "", str(tokens))
             tokens = re.sub(r"\'", "", str(tokens))
