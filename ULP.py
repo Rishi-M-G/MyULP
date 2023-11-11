@@ -188,7 +188,8 @@ class LogParser:
             slc['event_label'] = [template] * len(slc['event_label'].to_list())
 
 
-            stock = stock.append(slc)
+            #stock = stock.append(slc)
+            stock = pd.concat([stock, slc], ignore_index=True)
             stock = stock.sort_index()
 
         self.df_log = stock
