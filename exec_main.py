@@ -62,33 +62,33 @@ def evaluator(
 
     groundtruth = os.path.join(indir, log_file_basename + '_structured.csv')
     parsedresult = os.path.join(output_dir, log_file_basename + '_structured.csv')
-    # pp=parsedresult
-    # print("parsedresult",parsedresult)
+    pp=parsedresult
+    print("parsedresult",parsedresult)
     
     # calculate grouping accuracy
     start_time = time.time()
     # _, GA = evaluate(
-    #      groundtruth=groundtruth,
-    #      parsedresult=pp
+    #     groundtruth=groundtruth,
+    #     parsedresult=pp
     # )
 
-    f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std, GA = evaluate(
+    f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std = evaluate(
+        groundtruth=groundtruth,
+        parsedresult=pp
+    )
+
+
+    # calculate parsing accuracy
+    start_time = time.time()
+    PA = calculate_parsing_accuracy(
         groundtruth=groundtruth,
         parsedresult=parsedresult
     )
 
 
-    # # calculate parsing accuracy
-    # start_time = time.time()
-    # PA = calculate_parsing_accuracy(
-    #     groundtruth=groundtruth,
-    #     parsedresult=parsedresult
-    # )
-
-
     # calculate template-level accuracy
     start_time = time.time()
-    avg_accu, partial,tool_templates, ground_templates, FTA,PA, PTA, RTA, OG, UG, SuccesInd = evaluate_template_level(
+    avg_accu, partial,tool_templates, ground_templates, FTA, PTA, RTA, OG, UG, SuccesInd = evaluate_template_level(
         dataset=dataset,
         groundtruth=groundtruth,
         parsedresult=parsedresult,
@@ -99,10 +99,10 @@ def evaluator(
     print('Number of template found Vs Groundtruth ', tool_templates, ground_templates)
 
     # calculate Message-Level Accuracy and Edit Distance
-    # msg_accuracy, edit_distance_mean, edit_distance_std = evaluate_message_level(
-    #     groundtruth=os.path.join(indir, log_file_basename + '_structured_corrected.csv'),
-    #     parsedresult=parsedresult
-    # )
+    msg_accuracy, edit_distance_mean, edit_distance_std = evaluate_message_level(
+        groundtruth=os.path.join(indir, log_file_basename + '_structured_corrected.csv'),
+        parsedresult=parsedresult
+    )
     # result = dataset + ',' + \
     #          str(tool_templates) + ',' + \
     #          str(ground_templates) + ',' + \
@@ -115,6 +115,8 @@ def evaluator(
              str(avg_accu) + ',' + \
              str(GA) + ',' + \
              str(PA) + ',' + \
+             str(FTA) + ',' + \
+             str(PTA) + ',' + \
              str(RTA) + ',' + \
              str(OG) + ',' + \
              str(UG) + ',' + \
