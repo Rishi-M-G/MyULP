@@ -38,13 +38,11 @@ def evaluate(groundtruth, parsedresult):
         groundtruth=groundtruth,
         parsedresult=parsedresult
     )
-    # Calculate grouping accuracy
-    _, GA = get_accuracy(df_groundtruth['EventId'], df_parsedlog['EventId'])
 
     print('Precision: %.4f, Recall: %.4f, F1_measure: %.4f, Grouping_Accuracy (GA): %.4f, '
           'Msg_Accuracy: %.4f, Edit_Distance_Mean: %.4f, Edit_Distance_Std: %.4f'
           % (precision, recall, f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std))
-    return f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std,GA
+    return f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std
 
 def get_accuracy(series_groundtruth, series_parsedlog, debug=False):
     """ Compute accuracy metrics between log parsing results and ground truth
