@@ -113,7 +113,6 @@ def evaluator(
              str(tool_templates) + ',' + \
              str(ground_templates) + ',' + \
              str(avg_accu) + ',' + \
-             str(GA) + ',' + \
              str(PA) + ',' + \
              str(FTA) + ',' + \
              str(PTA) + ',' + \
