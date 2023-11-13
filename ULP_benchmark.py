@@ -9,8 +9,8 @@ import pandas as pd
 import numpy as np
 import Levenshtein as lev
 
-#input_dir = '../../logs/'  # The input directory of log file
-input_dir = "../dataset"
+input_dir = '../../logs/'  # The input directory of log file
+#input_dir = "../dataset"
 output_dir = "./output"
 
 benchmark_settings = {
