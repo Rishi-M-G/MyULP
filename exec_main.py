@@ -67,12 +67,12 @@ def evaluator(
     
     # calculate grouping accuracy
     start_time = time.time()
-    _, GA = evaluate(
-         groundtruth=groundtruth,
-         parsedresult=pp
-    )
+    # _, GA = evaluate(
+    #      groundtruth=groundtruth,
+    #      parsedresult=pp
+    # )
 
-    f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std = evaluate(
+    f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std, GA = evaluate(
         groundtruth=groundtruth,
         parsedresult=pp
     )
