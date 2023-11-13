@@ -22,7 +22,7 @@ def prepare_results(output_dir):
     with open(os.path.join(output_dir, result_file), 'w') as csv_file:
         fw = csv.writer(csv_file, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         fw.writerow(['Dataset', 'GA_time', 'PA_time', 'TA_time', 'parse_time', 'identified_templates',
-                     'ground_templates', 'GA', 'PA', 'FTA', 'PTA', 'RTA', 'OG', 'UG', 'MX'])
+                     'ground_templates', 'GA', 'PA', 'FTA', 'PTA', 'RTA', 'OG', 'UG', 'MX','MLA', 'ED'])
 
     return result_file
 
@@ -92,12 +92,32 @@ def evaluator(
     
     print('Number of template found Vs Groundtruth ', tool_templates, ground_templates)
 
+    # calculate Message-Level Accuracy and Edit Distance
+    msg_accuracy, edit_distance_mean, edit_distance_std = evaluate_message_level(
+        groundtruth=os.path.join(indir, log_file_basename + '_structured_corrected.csv'),
+        parsedresult=parsedresult
+    )
+    # result = dataset + ',' + \
+    #          str(tool_templates) + ',' + \
+    #          str(ground_templates) + ',' + \
+    #          str(avg_accu) + ',' + \
+    #          str(GA) + ',' + \
+    #          str(PA) + ',' + '\n'
     result = dataset + ',' + \
              str(tool_templates) + ',' + \
              str(ground_templates) + ',' + \
              str(avg_accu) + ',' + \
              str(GA) + ',' + \
-             str(PA) + ',' + '\n'
+             str(PA) + ',' + \
+             str(FTA) + ',' + \
+             str(PTA) + ',' + \
+             str(RTA) + ',' + \
+             str(OG) + ',' + \
+             str(UG) + ',' + \
+             str(SuccesInd) + ',' + \
+             str(msg_accuracy) + ',' + \
+             str(edit_distance_mean) + ',' + \
+             '\n'
 
     
     output_dir=output_dir
