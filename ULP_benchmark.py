@@ -5,6 +5,8 @@ sys.path.append('../')
 
 import os
 import pandas as pd
+import numpy as np
+import Levenshtein as lev
 
 
 input_dir = '../../logs/' # The input directory of log file
@@ -136,13 +138,39 @@ def main():
                                groundtruth=os.path.join(indir, log_file + '_structured.csv'),
                                parsedresult=os.path.join(output_dir, log_file + '_structured.csv')
                                )
-        bechmark_result.append([dataset, F1_measure, accuracy])
+        # New evaluation for Message-level accuracy and edit distance
+        msg_accuracy, edit_distance_mean, edit_distance_std = evaluate_message_level(
+            groundtruth=os.path.join(indir, log_file + '_structured_corrected.csv'),
+            parsedresult=os.path.join(output_dir, log_file + '_structured.csv')
+        )
+        bechmark_result.append([dataset, F1_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std])
 
     print('\n=== Overall evaluation results ===')
-    df_result = pd.DataFrame(bechmark_result, columns=['Dataset', 'F1_measure', 'Accuracy'])
+    df_result = pd.DataFrame(bechmark_result, columns=['Dataset', 'F1_measure', 'Accuracy', 'Msg_Accuracy', 'Edit_Distance_Mean', 'Edit_Distance_Std'])
     df_result.set_index('Dataset', inplace=True)
     print(df_result)
     df_result.T.to_csv('ULP_bechmark_result.csv')
+
+    def evaluate_message_level(groundtruth, parsedresult):
+        df_groundtruth = pd.read_csv(groundtruth)
+        df_parsedlog = pd.read_csv(parsedresult, index_col=False)
+
+        # Assuming 'EventTemplate' is the relevant column for message-level evaluation
+        msg_groundtruth = df_groundtruth['EventTemplate'].values.astype('str')
+        msg_parsedlog = df_parsedlog['EventTemplate'].values.astype('str')
+
+        # Message-level accuracy
+        msg_accuracy = np.mean(msg_groundtruth == msg_parsedlog)
+
+        # Edit distance
+        edit_distance_result = np.array([lev.distance(i, j) for i, j in zip(msg_groundtruth, msg_parsedlog)])
+        edit_distance_mean = np.mean(edit_distance_result)
+        edit_distance_std = np.std(edit_distance_result)
+
+        print('Message-Level Accuracy: %.4f, Edit Distance Mean: %.4f, Edit Distance Std: %.4f' % (
+            msg_accuracy, edit_distance_mean, edit_distance_std))
+
+        return msg_accuracy, edit_distance_mean, edit_distance_std
 
 
 if __name__ == '__main__':
