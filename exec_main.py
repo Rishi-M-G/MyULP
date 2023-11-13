@@ -8,6 +8,7 @@ from multiprocessing import Process
 from evaluator import evaluate
 from indepth_analysis import evaluate_template_level
 from PA_calculator import calculate_parsing_accuracy
+from evaluator import evaluate_message_level
 
 TIMEOUT = 3600  # log template identification timeout (sec)
 
