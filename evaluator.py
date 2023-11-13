@@ -2,12 +2,13 @@
 
 import sys
 import pandas as pd
+import numpy as np
+import Levenshtein as lev
 from collections import defaultdict
 try:
     from scipy.misc import comb
 except ImportError as e:
     from scipy.special import comb
-
 
 def evaluate(groundtruth, parsedresult):
     """ Evaluation function to org_benchmark log parsing accuracy
@@ -31,8 +32,17 @@ def evaluate(groundtruth, parsedresult):
     df_groundtruth = df_groundtruth.loc[null_logids]
     df_parsedlog = df_parsedlog.loc[null_logids]
     (precision, recall, f_measure, accuracy) = get_accuracy(df_groundtruth['EventId'], df_parsedlog['EventId'])
-    print('Precision: %.4f, Recall: %.4f, F1_measure: %.4f, Grouping_Accuracy (GA): %.4f'%(precision, recall, f_measure, accuracy))
-    return f_measure, accuracy
+
+    # New evaluation for Message-level accuracy and edit distance
+    msg_accuracy, edit_distance_mean, edit_distance_std = evaluate_message_level(
+        groundtruth=groundtruth,
+        parsedresult=parsedresult
+    )
+
+    print('Precision: %.4f, Recall: %.4f, F1_measure: %.4f, Grouping_Accuracy (GA): %.4f, '
+          'Msg_Accuracy: %.4f, Edit_Distance_Mean: %.4f, Edit_Distance_Std: %.4f'
+          % (precision, recall, f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std))
+    return f_measure, accuracy, msg_accuracy, edit_distance_mean, edit_distance_std
 
 def get_accuracy(series_groundtruth, series_parsedlog, debug=False):
     """ Compute accuracy metrics between log parsing results and ground truth
@@ -88,6 +98,27 @@ def get_accuracy(series_groundtruth, series_parsedlog, debug=False):
     f_measure = 2 * precision * recall / (precision + recall)
     accuracy = float(accurate_events) / series_groundtruth.size
     return precision, recall, f_measure, accuracy
+
+def evaluate_message_level(groundtruth, parsedresult):
+    df_groundtruth = pd.read_csv(groundtruth)
+    df_parsedlog = pd.read_csv(parsedresult, index_col=False)
+
+    # Assuming 'EventTemplate' is the relevant column for message-level evaluation
+    msg_groundtruth = df_groundtruth['EventTemplate'].values.astype('str')
+    msg_parsedlog = df_parsedlog['EventTemplate'].values.astype('str')
+
+    # Message-level accuracy
+    msg_accuracy = np.mean(msg_groundtruth == msg_parsedlog)
+
+    # Edit distance
+    edit_distance_result = np.array([lev.distance(i, j) for i, j in zip(msg_groundtruth, msg_parsedlog)])
+    edit_distance_mean = np.mean(edit_distance_result)
+    edit_distance_std = np.std(edit_distance_result)
+
+    print('Message-Level Accuracy: %.4f, Edit Distance Mean: %.4f, Edit Distance Std: %.4f'
+          % (msg_accuracy, edit_distance_mean, edit_distance_std))
+
+    return msg_accuracy, edit_distance_mean, edit_distance_std
 
 
 
