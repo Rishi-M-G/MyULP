@@ -151,7 +151,7 @@ def main():
     print(df_result)
     df_result.T.to_csv('ULP_bechmark_result.csv')
 
-    def evaluate_message_level(groundtruth, parsedresult):
+def evaluate_message_level(groundtruth, parsedresult):
         df_groundtruth = pd.read_csv(groundtruth)
         df_parsedlog = pd.read_csv(parsedresult, index_col=False)
 
